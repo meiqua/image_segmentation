@@ -1,4 +1,0 @@
-/home/meiqua/image_segmentation/segmentation/CMakeFiles/rebuild_cache.dir
-/home/meiqua/image_segmentation/segmentation/CMakeFiles/edit_cache.dir
-/home/meiqua/image_segmentation/segmentation/CMakeFiles/cxxSeg_pybind_executable.dir
-/home/meiqua/image_segmentation/segmentation/CMakeFiles/cxxSeg_pybind.dir
