@@ -17,7 +17,8 @@ find_package(pybind11 REQUIRED)
 include(Cmake/FindNumPy.cmake)
 
 
-include_directories(${OpenCV_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS}
+include_directories(${OpenCV_INCLUDE_DIRS}
+    ${PYTHON_INCLUDE_DIRS}
     ${PYTHON_NUMPY_INCLUDE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR})
 
@@ -26,14 +27,15 @@ set(SOURCE_PYBIND
     np2mat/ndarray_converter.cpp)
 
 set(SOURCE
-    seg.cpp)
+    seg.cpp
+    CIEDE2000/CIEDE2000.cpp)
 
 set(LIBS
     ${OpenCV_LIBS})
 
-pybind11_add_module(${PROJECT_NAME} ${SOURCE} ${SOURCE_PYBIND})
+pybind11_add_module(${PROJECT_NAME} ${SOURCE_PYBIND} ${SOURCE} )
 target_link_libraries(${PROJECT_NAME} PRIVATE ${LIBS})
 
-add_executable(${PROJECT_NAME}_executable ${SOURCE} test.cpp)
+add_executable(${PROJECT_NAME}_executable test.cpp ${SOURCE})
 target_link_libraries(${PROJECT_NAME}_executable ${LIBS})
 

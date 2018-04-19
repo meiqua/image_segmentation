@@ -26,6 +26,17 @@ string type2str(int type) {
 }
 
 int main(){
+    string prefix = "/home/meiqua/image_segmentation/segmentation/test/";
+    Mat rgb = cv::imread(prefix+"test.png");
+    pyrDown(rgb, rgb);
+    pyrDown(rgb, rgb);
+    pyrDown(rgb, rgb);
+    Mat lab;
+    cvtColor(rgb, lab, CV_BGR2Lab);
+    //ori: L 0--100 a: -127--127 b: -127--127, now all 0-255
+    seg_helper::Timer timer;
+    seg_helper::min_span_tree::Graph graph(lab);
+    timer.out();
 
     cout << "end" << endl;
     return 0;
