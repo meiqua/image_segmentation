@@ -30,8 +30,6 @@ private:
 
 namespace min_span_tree {
 struct Vertex{
-    int row;
-    int col;
     int id;
 };
 struct Edge {
@@ -78,7 +76,7 @@ struct Graph {
         double cost = 0;
         std::sort(edges.begin(), edges.end());
         DisjointSets ds(V_size);
-        int remaining = V_size-1;
+        int counts = 0;
         for(auto& edge: edges){
             int v_id1 = edge.v1.id;
             int v_id2 = edge.v2.id;
@@ -88,10 +86,12 @@ struct Graph {
                 ds.merge(v_parent1, v_parent2);
                 cost += edge.weight;
                 mst_edges.push_back(edge);
+                counts++;
+                if(counts==V_size-1){
+                    break;
+                }
             }
-            if (!--remaining) break;
         }
-        if (remaining) return std::numeric_limits<double>::infinity();
         return cost;
     }
     Graph(cv::Mat lab){
@@ -105,9 +105,7 @@ struct Graph {
                         int row = i+m;
                         int col = j+n;
                         Vertex v;
-                        v.row = row;
-                        v.col = col;
-                        v.id = col + row*lab.rows;
+                        v.id = col + row*lab.cols;
                         vs.push_back(v);
                         colors.push_back(lab.at<cv::Vec3b>(row,col));
                     }
@@ -126,7 +124,8 @@ struct Graph {
                         lab2.a = double(c_[1]) - 128;
                         lab2.b = double(c_[2]) - 128;
                         double weight = CIEDE2000::CIEDE2000(lab1, lab2);
-
+                        weight += std::numeric_limits<double>::epsilon();
+                        assert(weight>0);
                         Edge edge;
                         edge.v1 = v5;
                         edge.v2 = v_;
@@ -144,4 +143,34 @@ struct Graph {
 
 }
 
+class Segmentation {
+public:
+    Segmentation(cv::Mat lab,
+                 std::vector<seg_helper::min_span_tree::Edge>& edges){
+        for(int i=0; i<lab.rows; i++)
+            for(int j=0; j<lab.cols; j++){
+                entry e1;
+                e1.id = j + i*lab.cols;
+                e1.parent = e1.id;
+                V_list.push_back(e1);
+                assert(e1.id == V_list.size()-1);
+            }
+        this->edges = std::move(edges);
+        level_recorder.resize(1); //we don't want level 0, just empty
+    }
+    struct entry{
+        int id;
+        int parent;
+        int count = 1;
+        int level=0;
+        double merging_cost=0;
+    };
+    std::vector<entry> V_list;
+    std::vector<seg_helper::min_span_tree::Edge> edges;
+    std::vector<std::vector<entry>> level_recorder;
+
+    void merge(seg_helper::min_span_tree::Edge& edge);
+    int find(entry& u, std::vector<entry>& V_list);
+    std::vector<std::vector<std::vector<int>>> process();
+};
 #endif

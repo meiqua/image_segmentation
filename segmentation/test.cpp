@@ -1,43 +1,49 @@
 #include "seg.h"
 using namespace std;
 using namespace cv;
-// for test
-string type2str(int type) {
-  string r;
-
-  uchar depth = type & CV_MAT_DEPTH_MASK;
-  uchar chans = 1 + (type >> CV_CN_SHIFT);
-
-  switch ( depth ) {
-    case CV_8U:  r = "8U"; break;
-    case CV_8S:  r = "8S"; break;
-    case CV_16U: r = "16U"; break;
-    case CV_16S: r = "16S"; break;
-    case CV_32S: r = "32S"; break;
-    case CV_32F: r = "32F"; break;
-    case CV_64F: r = "64F"; break;
-    default:     r = "User"; break;
-  }
-
-  r += "C";
-  r += (chans+'0');
-
-  return r;
-}
 
 int main(){
-    string prefix = "/home/meiqua/image_segmentation/segmentation/test/";
+    string prefix = "/home/meiqua/image_segmentation/segmentation/test/test2/";
     Mat rgb = cv::imread(prefix+"test.png");
-    pyrDown(rgb, rgb);
-    pyrDown(rgb, rgb);
-    pyrDown(rgb, rgb);
+//    pyrDown(rgb, rgb);
+
     Mat lab;
     cvtColor(rgb, lab, CV_BGR2Lab);
     //ori: L 0--100 a: -127--127 b: -127--127, now all 0-255
     seg_helper::Timer timer;
     seg_helper::min_span_tree::Graph graph(lab);
-    timer.out();
+    timer.out("MST time");
 
+    Segmentation seg(lab, graph.mst_edges);
+    auto lvs = seg.process();
+    timer.out("seg time");
+
+    for(int i=0;i<lvs.size();i++){
+        auto& lv = lvs[i];
+
+        Mat show = Mat(rgb.size(), CV_8UC3, Scalar(0));
+        for(auto& part: lv){
+            cv::Vec3d aveColor(0,0,0);
+            int count = 0;
+            for(int idx: part){
+                int row = idx/int(rgb.cols);
+                int col = idx%int(rgb.cols);
+                aveColor += rgb.at<cv::Vec3b>(row, col);
+//                aveColor += lab.at<cv::Vec3b>(row, col);
+                count ++;
+            }
+            aveColor /= count;
+            for(int idx: part){
+                int row = idx/int(rgb.cols);
+                int col = idx%int(rgb.cols);
+                show.at<cv::Vec3b>(row, col) = aveColor;
+            }
+        }
+//        cvtColor(show, show, CV_Lab2BGR);
+        imshow("level"+to_string(i+1), show);
+//        imwrite(prefix + "test_rgb_ave/level"+to_string(i+1)+".png", show);
+    }
+    waitKey(0);
     cout << "end" << endl;
     return 0;
 }
