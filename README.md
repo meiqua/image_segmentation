@@ -5,7 +5,8 @@ Algorithm is graph-based mainly on MST and union find.
 CIEDE2000: lab color space distance measurement, got from github  
 
 ### test1: without post processing
-You can see that without post processing, there are many edges.
+You can see that without post processing, there are many small components
+along edges.
 #### rgb average result
 ![img](segmentation/test/test1/test_rgb_ave/level1.png)
 ![img](segmentation/test/test1/test_rgb_ave/level2.png)
