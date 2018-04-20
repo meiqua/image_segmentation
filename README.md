@@ -1,5 +1,6 @@
 # image segmentation
 c++ Implementation of Parameter-free Hierarchical Image Segmentation  
+[pdf](Parameter-free%20Hierarchical%20Image%20Segmentation.pdf)
 ### test1: without post processing
 You can see that without post processing, there are many edges.
 #### rgb average result
