@@ -3,9 +3,20 @@ using namespace std;
 using namespace cv;
 
 int main(){
-    string prefix = "/home/meiqua/image_segmentation/segmentation/test/test2/";
+    string prefix = "/home/meiqua/image_segmentation/segmentation/test/test1/";
     Mat rgb = cv::imread(prefix+"test.png");
-//    pyrDown(rgb, rgb);
+//    medianBlur(rgb, rgb, 5);
+    while (rgb.rows>1000) {
+        pyrDown(rgb, rgb);
+    }
+
+//    Rect roi(300,560,100,100);
+//    Rect roi(700,600,100,100);
+//    Rect roi(700,1000,100,100);
+//    rgb = rgb(roi);
+
+    imshow("rgb", rgb);
+//    waitKey(0);
 
     Mat lab;
     cvtColor(rgb, lab, CV_BGR2Lab);
@@ -33,10 +44,15 @@ int main(){
                 count ++;
             }
             aveColor /= count;
+            cv::Vec3b randColor;
+            randColor[0] = rand()%255;
+            randColor[1] = rand()%255;
+            randColor[2] = rand()%255;
             for(int idx: part){
                 int row = idx/int(rgb.cols);
                 int col = idx%int(rgb.cols);
                 show.at<cv::Vec3b>(row, col) = aveColor;
+                show.at<cv::Vec3b>(row, col) = randColor;
             }
         }
 //        cvtColor(show, show, CV_Lab2BGR);

@@ -90,6 +90,8 @@ std::vector<std::vector<std::vector<int>>> Segmentation::process()
     for(auto& edge: edges){
         merge(edge);
     }
+
+    // post process
     bool no_size_smaller=false;
     while (!no_size_smaller) {
         no_size_smaller = true;

@@ -74,7 +74,9 @@ struct Graph {
     double mst_cost;
     double kruskalMST(){
         double cost = 0;
+
         std::sort(edges.begin(), edges.end());
+
         DisjointSets ds(V_size);
         int counts = 0;
         for(auto& edge: edges){
