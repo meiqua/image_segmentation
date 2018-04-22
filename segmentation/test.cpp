@@ -3,8 +3,8 @@ using namespace std;
 using namespace cv;
 
 int main(){
-    string prefix = "/home/meiqua/image_segmentation/segmentation/test/test1/";
-    Mat rgb = cv::imread(prefix+"test.png");
+    string prefix = "/home/meiqua/image_segmentation/segmentation/test/test5/";
+    Mat rgb = cv::imread(prefix+"test.jpg");
 //    medianBlur(rgb, rgb, 5);
     while (rgb.rows>1000) {
         pyrDown(rgb, rgb);
@@ -52,7 +52,7 @@ int main(){
                 int row = idx/int(rgb.cols);
                 int col = idx%int(rgb.cols);
                 show.at<cv::Vec3b>(row, col) = aveColor;
-                show.at<cv::Vec3b>(row, col) = randColor;
+//                show.at<cv::Vec3b>(row, col) = randColor;
             }
         }
 //        cvtColor(show, show, CV_Lab2BGR);

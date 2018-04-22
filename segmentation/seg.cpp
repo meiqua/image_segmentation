@@ -2,6 +2,8 @@
 
 void Segmentation::merge(seg_helper::min_span_tree::Edge &edge)
 {
+    bool max_version = false;
+
     auto& v1 = edge.v1;
     auto& v2 = edge.v2;
     auto& entry1 = V_list[v1.id];
@@ -13,40 +15,40 @@ void Segmentation::merge(seg_helper::min_span_tree::Edge &edge)
     auto& parent2 = V_list[parent2_];
     if(parent1.level == parent2.level){
 
-        double stored_cost = parent1.merging_cost+parent2.merging_cost;
-        stored_cost /= (parent1.count + parent2.count);
+        double stored_cost = 0;
+        if(max_version){
+            stored_cost = std::max(parent1.merging_cost, parent2.merging_cost);
+        }else{
+            stored_cost = parent1.merging_cost + parent2.merging_cost;
+            stored_cost /= (parent1.count + parent2.count);
+        }
 
         if(stored_cost < edge.weight){  // high color variation
             if(level_recorder.size() <= parent1.level){
                 level_recorder.push_back(V_list);
             }
             parent2.level += 1;
-            parent1.parent = parent2.id;
+        }
+        parent1.parent = parent2.id;
 
-            parent2.count = parent1.count + parent2.count;
+        parent2.count = parent1.count + parent2.count;
+
+
+        if(max_version){
+            parent2.merging_cost = edge.weight;
+        }else {
             parent2.merging_cost = parent1.merging_cost +
                     parent2.merging_cost + edge.weight;
-            if(parent2.level < level_recorder.size() && parent2.level>0){
-                for(int i=parent2.level;i<level_recorder.size();i++){
-                    auto& V = level_recorder[i];
-                    V[parent1.id] = parent1;
-                    V[parent2.id] = parent2;
-                }
-            }
-        }else{
-            parent1.parent = parent2.id;
+        }
 
-            parent2.count = parent1.count + parent2.count;
-            parent2.merging_cost = parent1.merging_cost +
-                    parent2.merging_cost + edge.weight;
-            if(parent2.level < level_recorder.size() && parent2.level>0){
-                for(int i=parent2.level;i<level_recorder.size();i++){
-                    auto& V = level_recorder[i];
-                    V[parent1.id] = parent1;
-                    V[parent2.id] = parent2;
-                }
+        if(parent2.level < level_recorder.size() && parent2.level>0){
+            for(int i=parent2.level;i<level_recorder.size();i++){
+                auto& V = level_recorder[i];
+                V[parent1.id] = parent1;
+                V[parent2.id] = parent2;
             }
         }
+
     }else{
         int high_id, low_id;
         if(parent2.level>parent1.level){
@@ -64,8 +66,15 @@ void Segmentation::merge(seg_helper::min_span_tree::Edge &edge)
         }
         parent1_h.parent = parent2_h.id;
         parent2_h.count += parent1_h.count;
-        parent2_h.merging_cost += parent1_h.merging_cost +
-                edge.weight + 1.0*(parent2_h.level-parent1_h.level);
+
+        if(max_version){
+            parent2_h.merging_cost = std::max(parent1_h.merging_cost, parent2_h.merging_cost);
+            parent2_h.merging_cost += 0.1*(parent2_h.level-parent1_h.level);
+        }else{
+            parent2_h.merging_cost += parent1_h.merging_cost +
+                    edge.weight + 1.0*(parent2_h.level-parent1_h.level);
+        }
+
         if(parent2_h.level < level_recorder.size() && parent2_h.level>0){
             for(int i=parent2_h.level;i<level_recorder.size();i++){
                 auto& V = level_recorder[i];
