@@ -14,8 +14,3 @@ CIEDE2000: lab color space distance measurement, got from github
 ![img](segmentation/test/test2/test_rgb_ave/level7.png)
 ![img](segmentation/test/test2/test_rgb_ave/level8.png)  
 
-to do:  
-set a small threshold for cost compare  
-max version is better  
-for low color variation judgment, select min of two  
-when update cost, don't add level cost, store level cost alone instead 

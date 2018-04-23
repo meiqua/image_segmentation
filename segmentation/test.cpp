@@ -4,7 +4,7 @@ using namespace cv;
 
 int main(){
     string prefix = "/home/meiqua/image_segmentation/segmentation/test/test5/";
-    Mat rgb = cv::imread(prefix+"test.png");
+    Mat rgb = cv::imread(prefix+"3.jpg");
 //    medianBlur(rgb, rgb, 5);
     while (rgb.rows>1000) {
         pyrDown(rgb, rgb);
@@ -28,6 +28,8 @@ int main(){
     Segmentation seg(lab, graph.mst_edges);
     auto lvs = seg.process();
     timer.out("seg time");
+
+//    cout << "is it 24? " << lvs.back().size() << endl;
 
     for(int i=0;i<lvs.size();i++){
         auto& lv = lvs[i];
@@ -60,5 +62,6 @@ int main(){
 //        imwrite(prefix + "test_rgb_ave/level"+to_string(i+1)+".png", show);
     }
     waitKey(0);
+    cout << "end" << endl;
     return 0;
 }
