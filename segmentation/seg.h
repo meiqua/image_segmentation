@@ -114,25 +114,28 @@ struct Graph {
                 }
                 for(int m=0; m<9; m++){
                     if(m!=4){
-                        auto v5 = vs[4];
-                        auto v_ = vs[m];
-                        CIEDE2000::LAB lab1, lab2;
-                        auto c5 = colors[4];
-                        auto c_ = colors[m];
-                        lab1.l = double(c5[0])/255*100;
-                        lab1.a = double(c5[1]) - 128;
-                        lab1.b = double(c5[2]) - 128;
-                        lab2.l = double(c_[0])/255*100;
-                        lab2.a = double(c_[1]) - 128;
-                        lab2.b = double(c_[2]) - 128;
-                        double weight = CIEDE2000::CIEDE2000(lab1, lab2);
-                        weight += std::numeric_limits<double>::epsilon();
-                        assert(weight>0);
-                        Edge edge;
-                        edge.v1 = v5;
-                        edge.v2 = v_;
-                        edge.weight = weight;
-                        edges.push_back(edge);
+//                        if(m%2==1)  // 4-connection
+                        {
+                            auto v5 = vs[4];
+                            auto v_ = vs[m];
+                            CIEDE2000::LAB lab1, lab2;
+                            auto c5 = colors[4];
+                            auto c_ = colors[m];
+                            lab1.l = double(c5[0])/255*100;
+                            lab1.a = double(c5[1]) - 128;
+                            lab1.b = double(c5[2]) - 128;
+                            lab2.l = double(c_[0])/255*100;
+                            lab2.a = double(c_[1]) - 128;
+                            lab2.b = double(c_[2]) - 128;
+                            double weight = CIEDE2000::CIEDE2000(lab1, lab2);
+                            weight += std::numeric_limits<double>::epsilon();
+                            assert(weight>0);
+                            Edge edge;
+                            edge.v1 = v5;
+                            edge.v2 = v_;
+                            edge.weight = weight;
+                            edges.push_back(edge);
+                        }
                     }
                 }
             }

@@ -16,7 +16,7 @@ void Segmentation::merge(seg_helper::min_span_tree::Edge &edge)
         double stored_cost = 0;
         stored_cost = std::min(parent1.merging_cost, parent2.merging_cost);
 
-        if(!(stored_cost + 0.01 > edge.weight)){  // high color variation
+        if(!(stored_cost + 0.001 > edge.weight)){  // high color variation
             if(level_recorder.size() <= parent1.level){
                 level_recorder.push_back(V_list);
             }

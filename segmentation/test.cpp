@@ -4,7 +4,7 @@ using namespace cv;
 
 int main(){
     string prefix = "/home/meiqua/image_segmentation/segmentation/test/test5/";
-    Mat rgb = cv::imread(prefix+"3.jpg");
+    Mat rgb = cv::imread(prefix+"1.jpg");
 //    medianBlur(rgb, rgb, 5);
     while (rgb.rows>1000) {
         pyrDown(rgb, rgb);
