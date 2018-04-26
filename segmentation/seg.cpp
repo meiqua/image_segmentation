@@ -12,23 +12,21 @@ void Segmentation::merge(seg_helper::min_span_tree::Edge &edge)
     auto& parent1 = V_list[parent1_];
     auto& parent2 = V_list[parent2_];
     if(parent1.level == parent2.level){
+        parent1.parent = parent2.id;
 
-        double stored_cost = 0;
-        stored_cost = std::min(parent1.merging_cost, parent2.merging_cost);
+        parent2.count = parent1.count + parent2.count;
 
-        if(!(stored_cost + 0.001 > edge.weight)){  // high color variation
+        parent2.merging_cost += edge.weight;
+
+        double stored_cost = parent2.merging_cost/parent2.count;
+//        stored_cost = std::min(parent1.merging_cost, parent2.merging_cost);
+
+        if(stored_cost + 0.1 < edge.weight){  // high color variation
             if(level_recorder.size() <= parent1.level){
                 level_recorder.push_back(V_list);
             }
             parent2.level += 1;
         }
-        parent1.parent = parent2.id;
-
-        parent2.count = parent1.count + parent2.count;
-
-
-        parent2.merging_cost = edge.weight;
-
 
         if(parent2.level < level_recorder.size() && parent2.level>0){
             for(int i=parent2.level;i<level_recorder.size();i++){
