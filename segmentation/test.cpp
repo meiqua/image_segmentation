@@ -3,13 +3,13 @@ using namespace std;
 using namespace cv;
 
 int main(){
-    string prefix = "/home/meiqua/image_segmentation/segmentation/test/test5/";
-    Mat rgb = cv::imread(prefix+"test.png");
-//    medianBlur(rgb, rgb, 5);
+    string prefix = "/home/meiqua/image_segmentation/segmentation/test/test4/";
+    Mat rgb = cv::imread(prefix+"3.jpg");
+
     while (rgb.rows>1000) {
         pyrDown(rgb, rgb);
     }
-
+    medianBlur(rgb, rgb, 5);
 //    Rect roi(300,560,100,100);
 //    Rect roi(700,600,100,100);
 //    Rect roi(700,1000,100,100);
