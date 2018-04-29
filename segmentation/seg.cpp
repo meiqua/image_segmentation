@@ -8,16 +8,25 @@ void Segmentation::merge(seg_helper::min_span_tree::Edge &edge)
     auto& entry2 = V_list[v2.id];
     auto parent1_ = find(entry1, V_list);
     auto parent2_ = find(entry2, V_list);
+    //we will go on even parent1 == parent2
+
+    //weighted union find
+    if(V_list[parent1_].count>V_list[parent2_].count){
+        int temp= parent1_;
+        parent1_ = parent2_;
+        parent2_ = temp;
+    }
 
     auto& parent1 = V_list[parent1_];
     auto& parent2 = V_list[parent2_];
     if(parent1.level == parent2.level){
+
         parent1.parent = parent2.id;
         parent2.count += parent1.count;
 
         double stored_cost = std::min(parent1.merging_cost, parent2.merging_cost);
         parent2.merging_cost = edge.weight;
-        if(stored_cost*1.01 < edge.weight){  // high color variation
+        if(stored_cost+0.1 < edge.weight){  // high color variation
             if(level_recorder.size() <= parent2.level){
                 level_recorder.push_back(V_list);
             }
@@ -41,6 +50,7 @@ void Segmentation::merge(seg_helper::min_span_tree::Edge &edge)
             high_id = parent1.id;
             low_id = parent2.id;
         }
+        // may break weighted union find, but not too slow when testing
         auto& parent1_h = V_list[low_id];
         auto& parent2_h = V_list[high_id];
         for(int i=parent1_h.level+1;i<parent2_h.level;i++){
@@ -49,7 +59,6 @@ void Segmentation::merge(seg_helper::min_span_tree::Edge &edge)
         }
         parent1_h.parent = parent2_h.id;
         parent2_h.count += parent1_h.count;
-
         parent2_h.merging_cost = edge.weight;
 
         if(parent2_h.level < level_recorder.size() && parent2_h.level>0){
@@ -64,11 +73,11 @@ void Segmentation::merge(seg_helper::min_span_tree::Edge &edge)
 
 int Segmentation::find(Segmentation::entry &u,std::vector<entry>& V_list)
 {
-    entry u_parent = V_list[u.parent];
-    while(u_parent.id != u_parent.parent){
-        u_parent = V_list[u_parent.parent];
+    int u_parent = V_list[u.parent].id;
+    while(u_parent != V_list[u_parent].parent){
+        u_parent = V_list[V_list[u_parent].parent].id;
     }
-    return u_parent.id;
+    return u_parent;
 }
 
 std::vector<std::vector<std::vector<int>>> Segmentation::process()
@@ -85,12 +94,7 @@ std::vector<std::vector<std::vector<int>>> Segmentation::process()
         no_size_smaller = true;
         for(int i=1; i<level_recorder.size(); i++){
             auto& v_l = level_recorder[i];
-            int size_thresh = 1<<i;  // 2^i
-
-            // maybe hard code is better for small obj?
-//            if(size_thresh>10){
-//                size_thresh = 10;
-//            }
+            int size_thresh = 1<<(i*2-1);  // 2^i
 
             for(auto& edge: edges){
                 auto& v1 = edge.v1;
@@ -117,6 +121,9 @@ std::vector<std::vector<std::vector<int>>> Segmentation::process()
 
     std::vector<std::vector<std::vector<int>>> lvs;
     for(int i=1;i<level_recorder.size();i++){  // jump level 0
+
+
+
         auto& result = level_recorder[i];
         std::vector<std::vector<int>> segs;
         int segs_size = 0;
@@ -127,6 +134,7 @@ std::vector<std::vector<std::vector<int>>> Segmentation::process()
                 segs_size ++;
             }
         }
+
         segs.resize(segs_size);
         for(auto& en: result){
             auto query = parent_idx.find(find(en, result));

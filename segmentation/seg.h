@@ -50,10 +50,10 @@ struct DisjointSets {
         }
     }
     int find(int u){
-        if(u != parent[u]){
-            parent[u] = find(parent[u]);
+        while(u != parent[u]){
+            u = parent[u];
         }
-        return parent[u];
+        return u;
     }
     void merge(int x, int y){
         x = find(x);
