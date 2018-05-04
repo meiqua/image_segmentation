@@ -28,7 +28,7 @@ void Segmentation::merge(seg_helper::min_span_tree::Edge &edge)
         parent2.merging_cost = edge.weight;
 
         // high color variation, with a small thresh
-        if(edge.weight > stored_cost+0.1){
+        if(edge.weight > 1){
             if(level_recorder.size() <= parent2.level){
                 level_recorder.push_back(V_list);
             }
@@ -88,7 +88,7 @@ std::vector<std::vector<std::vector<int>>> Segmentation::process()
         merge(edge);
     }
 
-    assert(level_recorder.size()>2);
+    assert(level_recorder.size()>1);
 
     // post process
     bool no_size_smaller=false;

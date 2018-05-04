@@ -3,8 +3,8 @@ using namespace std;
 using namespace cv;
 
 int main(){
-    string prefix = "/home/meiqua/image_segmentation/segmentation/test/test3/";
-    Mat rgb = cv::imread(prefix+"1.jpg");
+    string prefix = "/home/meiqua/image_segmentation/segmentation/test/test6/";
+    Mat rgb = cv::imread(prefix+"2.png");
 
     while (rgb.rows>1000) {
         pyrDown(rgb, rgb);
@@ -24,8 +24,6 @@ int main(){
     Segmentation seg(lab, graph.mst_edges);
     auto lvs = seg.process();
     timer.out("seg time");
-
-//    cout << "is it 24? " << lvs.back().size() << endl;
 
     for(int i=0;i<lvs.size();i++){
         auto& lv = lvs[i];
