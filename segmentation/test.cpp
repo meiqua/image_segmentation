@@ -3,12 +3,15 @@ using namespace std;
 using namespace cv;
 
 int main(){
-    string prefix = "/home/meiqua/image_segmentation/segmentation/test/test6/";
-    Mat rgb = cv::imread(prefix+"2.png");
+//    string prefix = "/home/meiqua/image_segmentation/segmentation/test/test6/";
+//    Mat rgb = cv::imread(prefix+"2.png");
 
+    auto rgb = cv::imread("/home/meiqua/weitu_cmake/test.png");
     while (rgb.rows>1000) {
         pyrDown(rgb, rgb);
     }
+    std::cout << "rgb.rows: " <<rgb.rows << std::endl;
+
 //    medianBlur(rgb, rgb, 5);
 
     imshow("rgb", rgb);

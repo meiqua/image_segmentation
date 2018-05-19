@@ -28,7 +28,7 @@ void Segmentation::merge(seg_helper::min_span_tree::Edge &edge)
         parent2.merging_cost = edge.weight;
 
         // high color variation, with a small thresh
-        if(edge.weight > 1){
+        if(edge.weight > 0.1){
             if(level_recorder.size() <= parent2.level){
                 level_recorder.push_back(V_list);
             }

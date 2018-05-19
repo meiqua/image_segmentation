@@ -72,6 +72,28 @@ struct Graph {
     int V_size;
     std::vector<Edge> edges, mst_edges;
     double mst_cost;
+
+    void add_edge(Vertex& v1, Vertex& v2, cv::Mat& lab){
+        CIEDE2000::LAB lab1, lab2;
+        int cols = lab.cols;
+        auto c1 = lab.at<cv::Vec3b>(v1.id/cols,v1.id%cols);
+        auto c2 = lab.at<cv::Vec3b>(v2.id/cols,v2.id%cols);
+
+        lab1.l = double(c1[0])/255*100;
+        lab1.a = double(c1[1]) - 128;
+        lab1.b = double(c1[2]) - 128;
+        lab2.l = double(c2[0])/255*100;
+        lab2.a = double(c2[1]) - 128;
+        lab2.b = double(c2[2]) - 128;
+        double weight = CIEDE2000::CIEDE2000(lab1, lab2);
+        weight += std::numeric_limits<double>::epsilon();
+
+        Edge edge;
+        edge.v1 = v1;
+        edge.v2 = v2;
+        edge.weight = weight;
+        edges.push_back(edge);
+    }
     double kruskalMST(){
         double cost = 0;
 
@@ -96,48 +118,20 @@ struct Graph {
         }
         return cost;
     }
-    Graph(cv::Mat lab){
+    Graph(cv::Mat& lab){
         V_size = lab.rows*lab.cols;
         for(int i=1; i<lab.rows-1; i++)  // 1 padding
             for(int j=1; j<lab.cols-1; j++){
-                std::vector<Vertex> vs;
-                std::vector<cv::Vec3b> colors;
-                for(int m=-1; m<=1; m++){
-                    for(int n=-1; n<=1; n++){
-                        int row = i+m;
-                        int col = j+n;
-                        Vertex v;
-                        v.id = col + row*lab.cols;
-                        vs.push_back(v);
-                        colors.push_back(lab.at<cv::Vec3b>(row,col));
-                    }
-                }
-                for(int m=0; m<9; m++){
-                    if(m!=4){
-//                        if(m%2==1)  // 4-connection
-                        {
-                            auto v5 = vs[4];
-                            auto v_ = vs[m];
-                            CIEDE2000::LAB lab1, lab2;
-                            auto c5 = colors[4];
-                            auto c_ = colors[m];
-                            lab1.l = double(c5[0])/255*100;
-                            lab1.a = double(c5[1]) - 128;
-                            lab1.b = double(c5[2]) - 128;
-                            lab2.l = double(c_[0])/255*100;
-                            lab2.a = double(c_[1]) - 128;
-                            lab2.b = double(c_[2]) - 128;
-                            double weight = CIEDE2000::CIEDE2000(lab1, lab2);
-                            weight += std::numeric_limits<double>::epsilon();
-                            assert(weight>0);
-                            Edge edge;
-                            edge.v1 = v5;
-                            edge.v2 = v_;
-                            edge.weight = weight;
-                            edges.push_back(edge);
-                        }
-                    }
-                }
+                Vertex v0, v1, v2, v3;
+                v0.id = j + i*lab.cols;
+                v1.id = j+1+i*lab.cols;
+                v2.id = j+(i+1)*lab.cols;
+                v3.id = j+1+(i+1)*lab.cols;
+
+                add_edge(v0, v1, lab);
+                add_edge(v0, v2, lab);
+                add_edge(v0, v3, lab);
+                add_edge(v1, v2, lab);
             }
         mst_cost = kruskalMST();
     }
