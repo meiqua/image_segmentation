@@ -28,7 +28,7 @@ void Segmentation::merge(seg_helper::min_span_tree::Edge &edge)
         parent2.merging_cost = edge.weight;
 
         // high color variation, with a small thresh
-        if(edge.weight > 0.1){
+        if(edge.weight > 2){
             if(level_recorder.size() <= parent2.level){
                 level_recorder.push_back(V_list);
             }
@@ -91,40 +91,40 @@ std::vector<std::vector<std::vector<int>>> Segmentation::process()
     assert(level_recorder.size()>1);
 
     // post process
-    bool no_size_smaller=false;
-    while (!no_size_smaller) {
-        no_size_smaller = true;
-        for(int i=1; i<level_recorder.size(); i++){
-            auto& v_l = level_recorder[i];
-            int size_thresh = 1<<(i*2-1);  // 2^i
+    bool post_process = false;
+    if(post_process){
+        bool no_size_smaller=false;
+        while (!no_size_smaller) {
+            no_size_smaller = true;
+            for(int i=1; i<level_recorder.size(); i++){
+                auto& v_l = level_recorder[i];
+                int size_thresh = 1<<(i);  // 2^i
 
-            for(auto& edge: edges){
-                auto& v1 = edge.v1;
-                auto& v2 = edge.v2;
-                auto& entry1 = v_l[v1.id];
-                auto& entry2 = v_l[v2.id];
-                auto parent1_ = find(entry1, v_l);
-                auto parent2_ = find(entry2, v_l);
-                if(parent1_ != parent2_){
-                    auto& parent1 = v_l[parent1_];
-                    auto& parent2 = v_l[parent2_];
-                    if(parent1.count<size_thresh){
-                        parent1.parent = parent2.id;
-                        no_size_smaller=false;
-                    }else if(parent2.count<size_thresh){
-                        parent2.parent = parent1.id;
-                        no_size_smaller=false;
+                for(auto& edge: edges){
+                    auto& v1 = edge.v1;
+                    auto& v2 = edge.v2;
+                    auto& entry1 = v_l[v1.id];
+                    auto& entry2 = v_l[v2.id];
+                    auto parent1_ = find(entry1, v_l);
+                    auto parent2_ = find(entry2, v_l);
+                    if(parent1_ != parent2_){
+                        auto& parent1 = v_l[parent1_];
+                        auto& parent2 = v_l[parent2_];
+                        if(parent1.count<size_thresh){
+                            parent1.parent = parent2.id;
+                            no_size_smaller=false;
+                        }else if(parent2.count<size_thresh){
+                            parent2.parent = parent1.id;
+                            no_size_smaller=false;
+                        }
                     }
                 }
             }
         }
     }
 
-
     std::vector<std::vector<std::vector<int>>> lvs;
     for(int i=1;i<level_recorder.size();i++){  // jump level 0
-
-
 
         auto& result = level_recorder[i];
         std::vector<std::vector<int>> segs;
@@ -138,10 +138,16 @@ std::vector<std::vector<std::vector<int>>> Segmentation::process()
         }
 
         segs.resize(segs_size);
-        for(auto& en: result){
-            auto query = parent_idx.find(find(en, result));
-            int idx = query->second;
-            segs[idx].push_back(en.id);
+        for(int y=0; y<super_indices.height(); y++) {
+            for(int x=0; x<super_indices.width(); x++) {
+                int i0 = super_indices(x,y);
+                if(i0 == -1) {
+                    continue;
+                }
+                auto query = parent_idx.find(find(result[i0], result));
+                int idx = query->second;
+                segs[idx].push_back(x+y*super_indices.width());
+            }
         }
         lvs.push_back(std::move(segs));
     }

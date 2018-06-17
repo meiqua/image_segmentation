@@ -3,11 +3,11 @@ using namespace std;
 using namespace cv;
 
 int main(){
-//    string prefix = "/home/meiqua/image_segmentation/segmentation/test/test6/";
-//    Mat rgb = cv::imread(prefix+"2.png");
+    string prefix = "/home/meiqua/image_segmentation/segmentation/test/t7/";
+    Mat rgb = cv::imread(prefix+"3.bmp");
 
-    auto rgb = cv::imread("/home/meiqua/weitu_cmake/test.png");
-    while (rgb.rows>1000) {
+//    auto rgb = cv::imread("/home/meiqua/weitu_cmake/test.png");
+    while (rgb.rows>=1000) {
         pyrDown(rgb, rgb);
     }
     std::cout << "rgb.rows: " <<rgb.rows << std::endl;
@@ -15,7 +15,7 @@ int main(){
 //    medianBlur(rgb, rgb, 5);
 
     imshow("rgb", rgb);
-//    waitKey(0);
+    waitKey(0);
 
     Mat lab;
     cvtColor(rgb, lab, CV_BGR2Lab);
@@ -24,7 +24,7 @@ int main(){
     seg_helper::min_span_tree::Graph graph(lab);
     timer.out("MST time");
 
-    Segmentation seg(lab, graph.mst_edges);
+    Segmentation seg(graph.V_size, graph.super_indices, graph.mst_edges);
     auto lvs = seg.process();
     timer.out("seg time");
 

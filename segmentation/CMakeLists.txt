@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 set (CMAKE_CXX_STANDARD 14)
 project(cxxSeg_pybind)
 
-OPTION(USE_PYBIND "Enable pybind" TRUE)
+OPTION(USE_PYBIND "Enable pybind" FALSE)
 
 #SET(CMAKE_BUILD_TYPE "Debug")
 SET(CMAKE_BUILD_TYPE "Release")
@@ -32,12 +32,32 @@ if (USE_PYBIND)
 endif()
 
 
+# eigen3
+find_package( Eigen3 REQUIRED )
+include_directories(${INCLUDE_DIRECTORIES}
+    ${EIGEN3_INCLUDE_DIR})
+
+
+# asp for superpixel
+include_directories(${INCLUDE_DIRECTORIES}
+    "asp/include"
+    "asp")
+set(SOURCE_ASP
+        asp/src/libasp/algos/ASP.cpp
+        asp/src/libasp/algos/DASP.cpp
+        asp/src/libasp/algos/SLIC.cpp
+        asp/src/libasp/pds/pds.cpp
+        asp/src/libasp/pds/Grid.cpp
+        asp/src/libasp/pds/FloydSteinberg.cpp)
+
+
 # include & src & lib
 include_directories(${INCLUDE_DIRECTORIES}
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_LIST_DIR})
 set(SOURCE
+        ${SOURCE_ASP}
         seg.cpp
         CIEDE2000/CIEDE2000.cpp)
 set(LIBS

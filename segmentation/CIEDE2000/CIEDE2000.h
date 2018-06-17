@@ -6,7 +6,7 @@
  
 #ifndef GPF_CIEDE2000_H_
 #define GPF_CIEDE2000_H_
-
+#include <Eigen/Dense>
 #include <ostream>
 
 #ifndef M_PI
@@ -58,6 +58,11 @@ namespace CIEDE2000
 	CIEDE2000(
 	    const LAB &lab1,
 	    const LAB &lab2);
+
+    float
+    CIEDE2000(
+        const Eigen::Vector3f &lab1,
+        const Eigen::Vector3f &lab2);
 	    
 	/***********************************************************************
 	 * Conversions.
