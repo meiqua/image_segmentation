@@ -5,13 +5,20 @@ using namespace cv;
 
 int main(){
     string prefix = "/home/meiqua/image_segmentation/segmentation/test/t7/";
-    Mat rgb = cv::imread(prefix+"3.bmp");
+    Mat rgb = cv::imread(prefix+"2.png");
     bool ori = false;
 //    auto rgb = cv::imread("/home/meiqua/weitu_cmake/test.png");
 //    while (rgb.rows>=1000) {
 //        pyrDown(rgb, rgb);
 //    }
-    cv::resize(rgb, rgb, {1024*rgb.cols/rgb.rows, 1024});
+    cv::resize(rgb, rgb, {2048*rgb.cols/rgb.rows, 2048});
+
+    int start_cols = rgb.cols / 4;
+    int start_rows = rgb.rows / 4;
+    cv::Rect roi(start_cols, start_rows, rgb.cols / 2, rgb.rows / 2);
+     rgb = rgb(roi);
+//    cv::Mat rgb_ = rgb(roi).clone();
+
     std::cout << "rgb.rows: " <<rgb.rows << std::endl;
 
 //    medianBlur(rgb, rgb, 5);
@@ -69,6 +76,7 @@ int main(){
             medianBlur(src, src, 5);
             medianBlur(src, src, 5);
             imshow("level"+to_string(i+1), src);
+            waitKey(0);
         }
 
     }
