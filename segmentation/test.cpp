@@ -66,7 +66,8 @@ int main(){
             cv::cvtColor(rgb, src, CV_BGR2GRAY);
         }else{
             cv::cvtColor(show, src, CV_BGR2GRAY);
-            medianBlur(src, src, 7);
+            medianBlur(src, src, 5);
+            medianBlur(src, src, 5);
             imshow("level"+to_string(i+1), src);
         }
 
