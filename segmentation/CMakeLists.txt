@@ -51,6 +51,10 @@ set(SOURCE_ASP
         asp/src/libasp/pds/FloydSteinberg.cpp)
 
 
+set(EDCIRCLE_SRC
+        edcircle/edcircle.cpp)
+
+
 # include & src & lib
 include_directories(${INCLUDE_DIRECTORIES}
         ${CMAKE_CURRENT_BINARY_DIR}
@@ -58,6 +62,7 @@ include_directories(${INCLUDE_DIRECTORIES}
         ${CMAKE_CURRENT_LIST_DIR})
 set(SOURCE
         ${SOURCE_ASP}
+        ${EDCIRCLE_SRC}
         seg.cpp
         CIEDE2000/CIEDE2000.cpp)
 set(LIBS

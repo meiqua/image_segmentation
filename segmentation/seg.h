@@ -152,7 +152,7 @@ struct Graph {
         slic_param.num_superpixels = 1024;
         slic_param.compactness = 0.15f;
         auto seg = asp::SuperpixelsSlic(img_color, slic_param);
-        bool vis_idxs = true;
+        bool vis_idxs = false;
         if(vis_idxs){
             cv::Mat idxs = slimage::ConvertToOpenCv(seg.indices);
             std::vector<int> unik = seg_helper::unique<int>(idxs, true);
